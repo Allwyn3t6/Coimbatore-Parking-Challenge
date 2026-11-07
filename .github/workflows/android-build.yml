@@ -77,6 +77,11 @@ jobs:
       - name: Import project and validate scripts
         run: godot --headless --editor --path . --quit
 
+      - name: Install Godot Android Gradle build template
+        run: |
+          mkdir -p android/build
+          unzip -q "$HOME/.local/share/godot/export_templates/4.4.1.stable/android_source.zip" -d android/build
+
       - name: Export Android APK
         run: |
           mkdir -p build
