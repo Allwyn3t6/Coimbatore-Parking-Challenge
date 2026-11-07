@@ -37,7 +37,7 @@ func _process(delta: float) -> void:
     if paused:
         return
     elapsed += delta
-    if car:
+    if is_instance_valid(car):
         car.throttle = float(touch_inputs.accelerate) - float(touch_inputs.brake)
         car.steering = float(touch_inputs.right) - float(touch_inputs.left)
         if Input.is_action_pressed("ui_up") or Input.is_key_pressed(KEY_W): car.throttle = 1.0
@@ -275,10 +275,14 @@ func _reset_mission() -> void:
 
 func _toggle_pause() -> void:
     paused = not paused
+    if is_instance_valid(car):
+        car.throttle = 0.0
+        car.speed = 0.0
+        car.set_physics_process(not paused)
     status_label.text = "PAUSED — tap PAUSE to resume" if paused else MISSIONS[selected_mission].description
 
 func _check_parking() -> void:
-    if finished or not car:
+    if finished or not is_instance_valid(car):
         return
     var local_pos: Vector3 = car.global_position
     var inside := absf(local_pos.x - parking_center.x) < 1.05 and absf(local_pos.z - parking_center.z) < 2.25
