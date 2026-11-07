@@ -23,13 +23,15 @@ All in-game vehicles use original, simplified generic meshes with different dime
 5. Touchscreen: use the on-screen steering and pedal controls.
 
 ## Android export
-The project targets mobile GL Compatibility rendering and landscape orientation. To export an APK:
-1. Install matching Godot export templates in Godot Editor.
-2. Install/configure Android SDK and JDK in Editor Settings → Export → Android.
-3. Add an Android export preset in Project → Export, set a unique package ID, and export a debug APK.
-4. Install on a physical Android device and test touch layout, performance and device-specific rendering before release.
+The repository includes `export_presets.cfg` with an Android ARM64 debug preset. Follow [ANDROID_BUILD.md](ANDROID_BUILD.md) for the complete setup.
 
-A signed Play Store release additionally requires your own release keystore and store listing assets. Never commit signing keys or passwords to this repository.
+Quick export after installing Godot 4.4.1, matching export templates, Android SDK and OpenJDK 17:
+
+```sh
+./tools/export_android.sh
+```
+
+The APK is written to `build/CoimbatoreParkingChallenge-debug.apk`. The preset uses package ID `com.allwyn3t6.coimbatoreparkingchallenge`. A Play Store release needs a separately configured release keystore and an AAB build. Never commit signing keys or passwords to this repository.
 
 ## Street-data and asset policy
 This build uses fictionalised procedural streets, not surveyed road geometry. It is inspired by Coimbatore's urban character; it does not claim to reproduce exact road layouts. If OpenStreetMap-derived geometry is added later, credit OpenStreetMap contributors and comply with ODbL: https://www.openstreetmap.org/copyright.
