@@ -13,6 +13,11 @@ if [ ! -f "$TEMPLATE_DIR/android_source.zip" ]; then
 fi
 mkdir -p android/build build
 unzip -q -o "$TEMPLATE_DIR/android_source.zip" -d android/build
+if [ -f "$HOME/.android/debug.keystore" ]; then
+  export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
+  export GODOT_ANDROID_KEYSTORE_DEBUG_USER="${GODOT_ANDROID_KEYSTORE_DEBUG_USER:-androiddebugkey}"
+  export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD="${GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD:-android}"
+fi
 "$GODOT_BIN" --headless --path . --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
 test -s build/CoimbatoreParkingChallenge-debug.apk
 echo "APK exported to build/CoimbatoreParkingChallenge-debug.apk"
