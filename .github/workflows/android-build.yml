@@ -85,6 +85,8 @@ jobs:
           export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD="android"
           godot --headless --verbose --path . --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
           test -s build/CoimbatoreParkingChallenge-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.1/apksigner" sign --ks "$HOME/.android/debug.keystore" --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android build/CoimbatoreParkingChallenge-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/CoimbatoreParkingChallenge-debug.apk
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
