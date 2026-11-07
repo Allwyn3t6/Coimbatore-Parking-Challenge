@@ -1,8 +1,8 @@
 extends RefCounted
 class_name VehicleCatalog
 
-# India model popularity reference: V3Cars, Oct 2025–Sep 2026.
-# Original generic game meshes only. No manufacturer logos or third-party 3D assets.
+# India model popularity reference: V3Cars, rolling 12 months Oct 2025–Sep 2026.
+# These are selectable game profiles with original generic meshes, not replicas.
 const CARS := [
     {"name":"Maruti Suzuki Dzire", "class":"Compact sedan", "length":4.0, "width":1.72, "turn":2.35, "speed":8.2, "color":Color("#d7e0e7"), "rank":1},
     {"name":"Tata Nexon", "class":"Compact SUV", "length":4.05, "width":1.8, "turn":2.15, "speed":7.8, "color":Color("#e7a52e"), "rank":2},
