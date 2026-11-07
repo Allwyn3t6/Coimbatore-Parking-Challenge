@@ -71,6 +71,9 @@ jobs:
       - name: Export Android APK
         run: |
           mkdir -p build
+          export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
+          export GODOT_ANDROID_KEYSTORE_DEBUG_USER="androiddebugkey"
+          export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD="android"
           godot --headless --path . --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
           test -s build/CoimbatoreParkingChallenge-debug.apk
 
