@@ -77,18 +77,13 @@ jobs:
       - name: Import project and validate scripts
         run: godot --headless --editor --path . --quit
 
-      - name: Install Godot Android Gradle build template
-        run: |
-          mkdir -p android/build
-          unzip -q "$HOME/.local/share/godot/export_templates/4.4.1.stable/android_source.zip" -d android/build
-
       - name: Export Android APK
         run: |
           mkdir -p build
           export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
           export GODOT_ANDROID_KEYSTORE_DEBUG_USER="androiddebugkey"
           export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD="android"
-          godot --headless --verbose --path . --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
+          godot --headless --verbose --path . --install-android-build-template --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
           test -s build/CoimbatoreParkingChallenge-debug.apk
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" sign --ks "$HOME/.android/debug.keystore" --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android build/CoimbatoreParkingChallenge-debug.apk
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/CoimbatoreParkingChallenge-debug.apk
