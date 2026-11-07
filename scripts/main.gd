@@ -49,7 +49,7 @@ func _build_world() -> void:
     sun.light_energy = 1.35
     add_child(sun)
 
-    _box("Asphalt street", Vector3(0, -0.18, -4), Vector3(13, 0.3, 42), Color("#343b42"), false)
+    _box("Asphalt street", Vector3(0, -0.18, -4), Vector3(13, 0.3, 42), Color("#343b42"), true)
     _box("Left footpath", Vector3(-7.5, 0.0, -4), Vector3(2.0, 0.4, 42), Color("#b9b2a4"), false)
     _box("Right footpath", Vector3(7.5, 0.0, -4), Vector3(2.0, 0.4, 42), Color("#b9b2a4"), false)
     for z in range(-23, 17, 5):
