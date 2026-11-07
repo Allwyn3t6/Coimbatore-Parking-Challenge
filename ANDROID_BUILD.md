@@ -5,7 +5,7 @@ This repository includes an Android export preset for a 64-bit ARM Android build
 ## One-time setup
 1. Install Godot **4.4.1 stable**. The editor and export templates must match.
 2. In Godot, open **Editor → Manage Export Templates… → Download and Install**.
-3. Install Android Studio or the Android command-line SDK. Install Android SDK Platform 35, Build Tools 35.0.1, Platform Tools, Command-line Tools, NDK and CMake as required by the installed Godot version.
+3. Install Android Studio or the Android command-line SDK. For the Godot 4.4.1 / Android API 35 setup, install Platform Tools 35+, Build Tools 35.0.1, Android Platform 35, Command-line Tools (latest), NDK r28b (28.1.13356709) and CMake 3.10.2.4988404. If Godot reports a different required NDK/CMake version, follow the version shown by that editor.
 4. Install OpenJDK 17.
 5. In Godot, open **Editor → Editor Settings → Export → Android** and set the Java SDK Path and Android SDK Path.
 6. Configure the Android debug keystore in the same Android export settings. Do not commit keystores or passwords.
