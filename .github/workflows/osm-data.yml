@@ -1,0 +1,55 @@
+name: Build city data from OpenStreetMap
+
+# Downloads OSM geometry for the game area, removes names, auto-generates
+# levels and commits data/city.json. The game downloads this file from GitHub
+# at start-up, so new data reaches players without a new APK.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 21 * * 0"   # weekly, Monday 02:47 IST
+  push:
+    branches: [main]
+    paths:
+      - "tools/osm/**"
+      - ".github/workflows/osm-data.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: osm-data
+  cancel-in-progress: false
+
+jobs:
+  build-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r tools/osm/requirements.txt
+
+      - name: Fetch OSM and build data/city.json
+        run: |
+          mkdir -p data/raw
+          python3 tools/osm/build_city.py --save-raw data/raw/overpass.json --out data/city.json
+          gzip -9 -f data/raw/overpass.json
+          python3 -c "import json;d=json.load(open('data/city.json'));print(d['meta'])"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "osm-data-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/city.json data/raw/overpass.json.gz
+          if git diff --cached --quiet; then
+            echo "No data changes"
+          else
+            git commit -m "Update OSM city data ($(date -u +%Y-%m-%d))"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
