@@ -5,18 +5,37 @@ class_name CityWorld
 ## feel local without identifying any real business.
 
 const CHUNK := 260.0
+# Invented shop names (Tamil, English, display type). No real businesses.
 const SIGNS := [
-    ["NOYYAL SILKS", "நொய்யல் சில்க்ஸ்"], ["KONGU MOBILES", "கொங்கு மொபைல்ஸ்"], ["SIRUVANI TEA STALL", "சிறுவாணி டீ ஸ்டால்"],
-    ["VELLIANGIRI MEDICALS", "வெள்ளியங்கிரி மெடிக்கல்ஸ்"], ["MARUDHAM SWEETS", "மருதம் ஸ்வீட்ஸ்"], ["KOVAI PUMPS & MOTORS", "கோவை பம்ப்ஸ் & மோட்டார்ஸ்"],
-    ["PERUR TEXTILES", "பேரூர் டெக்ஸ்டைல்ஸ்"], ["KONGU WET GRINDERS", "கொங்கு வெட் கிரைண்டர்ஸ்"], ["VINAYAKA MESS", "விநாயகா மெஸ்"],
-    ["THUDIYALUR BAKERY", "துடியலூர் பேக்கரி"], ["SINGAI HARDWARES", "சிங்கை ஹார்ட்வேர்ஸ்"], ["MALLI FLOWER STALL", "மல்லி பூக்கடை"],
-    ["KOVAI JEWELLERS", "கோவை ஜுவல்லர்ஸ்"], ["THAMBI TIFFIN CENTRE", "தம்பி டிபன் சென்டர்"], ["ANBU OPTICALS", "அன்பு ஆப்டிகல்ஸ்"],
-    ["SELVAM ELECTRICALS", "செல்வம் எலக்ட்ரிகல்ஸ்"], ["KAVERI READYMADES", "காவேரி ரெடிமேட்ஸ்"], ["THENDRAL BOOK HOUSE", "தென்றல் புத்தக நிலையம்"],
-    ["MUTHU STORES", "முத்து ஸ்டோர்ஸ்"], ["AMMAN FANCY", "அம்மன் பேன்சி"], ["NILGIRI SPICES", "நீலகிரி மசாலா"],
-    ["VANAKKAM TRAVELS", "வணக்கம் டிராவல்ஸ்"], ["PALANI FRUITS", "பழனி பழக்கடை"], ["KOVAI COFFEE WORKS", "கோவை காபி"],
+    ["நொய்யல் சில்க்ஸ்", "NOYYAL SILKS", "cloth"], ["கொங்கு மொபைல்ஸ்", "KONGU MOBILES", "none"], ["சிறுவாணி டீ ஸ்டால்", "SIRUVANI TEA STALL", "tea"],
+    ["வெள்ளியங்கிரி மெடிக்கல்ஸ்", "VELLIANGIRI MEDICALS", "none"], ["மருதம் ஸ்வீட்ஸ்", "MARUDHAM SWEETS", "none"], ["கோவை பம்ப்ஸ் & மோட்டார்ஸ்", "KOVAI PUMPS & MOTORS", "none"],
+    ["பேரூர் டெக்ஸ்டைல்ஸ்", "PERUR TEXTILES", "cloth"], ["கொங்கு வெட் கிரைண்டர்ஸ்", "KONGU WET GRINDERS", "none"], ["விநாயகா மெஸ்", "VINAYAKA MESS", "tea"],
+    ["துடியலூர் பேக்கரி", "THUDIYALUR BAKERY", "none"], ["சிங்கை ஹார்ட்வேர்ஸ்", "SINGAI HARDWARES", "crates"], ["மல்லி பூக்கடை", "MALLI FLOWER STALL", "flowers"],
+    ["கோவை ஜுவல்லர்ஸ்", "KOVAI JEWELLERS", "none"], ["தம்பி டிபன் சென்டர்", "THAMBI TIFFIN CENTRE", "tea"], ["அன்பு ஆப்டிகல்ஸ்", "ANBU OPTICALS", "none"],
+    ["செல்வம் எலக்ட்ரிகல்ஸ்", "SELVAM ELECTRICALS", "none"], ["காவேரி ரெடிமேட்ஸ்", "KAVERI READYMADES", "cloth"], ["தென்றல் புத்தக நிலையம்", "THENDRAL BOOK HOUSE", "none"],
+    ["முத்து ஸ்டோர்ஸ்", "MUTHU STORES", "crates"], ["அம்மன் பேன்சி", "AMMAN FANCY", "cloth"], ["நீலகிரி மசாலா", "NILGIRI SPICES", "crates"],
+    ["வணக்கம் டிராவல்ஸ்", "VANAKKAM TRAVELS", "none"], ["பழனி பழக்கடை", "PALANI FRUITS", "crates"], ["கோவை காபி", "KOVAI COFFEE WORKS", "tea"],
+    ["ஆனைகட்டி ஹோட்டல்", "ANAIKATTI HOTEL", "tea"], ["பவானி சாரீஸ்", "BHAVANI SAREES", "cloth"], ["அமுதம் பால் பண்ணை", "AMUDHAM MILK DEPOT", "none"],
+    ["சக்தி பாத்திரக் கடை", "SAKTHI VESSELS", "crates"], ["மதி கம்ப்யூட்டர்ஸ்", "MATHI COMPUTERS", "none"], ["ராஜா பூட்வேர்", "RAJA FOOTWEAR", "crates"],
+    ["கண்ணன் காய்கறி", "KANNAN VEGETABLES", "crates"], ["தமிழ் பிரிண்டர்ஸ்", "THAMIZH PRINTERS", "none"], ["இளநீர் கடை", "TENDER COCONUT", "crates"],
+    ["வேலன் ஜூஸ் கார்னர்", "VELAN JUICE CORNER", "tea"], ["ஜோதி லைட்டிங்ஸ்", "JOTHI LIGHTINGS", "none"], ["அருணா கிஃப்ட்ஸ்", "ARUNA GIFTS", "cloth"],
+    ["சூர்யா டைலர்ஸ்", "SURYA TAILORS", "cloth"], ["மணி சைக்கிள் மார்ட்", "MANI CYCLE MART", "crates"], ["குறிஞ்சி மருந்தகம்", "KURINJI PHARMACY", "none"],
+    ["வைகை பிரியாணி", "VAIGAI BIRIYANI", "tea"], ["லட்சுமி மளிகை", "LAKSHMI GROCERIES", "crates"], ["கோவை டிஜிட்டல் ஸ்டுடியோ", "KOVAI DIGITAL STUDIO", "none"],
+    ["பாரதி பெயிண்ட்ஸ்", "BHARATHI PAINTS", "crates"], ["சிவா ஆட்டோ ஸ்பேர்ஸ்", "SIVA AUTO SPARES", "crates"], ["நிலா ஐஸ்கிரீம்", "NILA ICE CREAM", "none"],
+    ["தாமரை கைத்தறி", "THAMARAI HANDLOOMS", "cloth"], ["முருகன் மொபைல் சர்வீஸ்", "MURUGAN MOBILE SERVICE", "none"], ["செந்தூர் பூக்கடை", "SENTHUR FLOWERS", "flowers"],
 ]
-const FACADE_TINTS := [Color("#f4efe6"), Color("#f2d6a2"), Color("#cfe3c4"), Color("#bcd6e8"), Color("#f2c2c2"), Color("#e9e3b8"), Color("#d9cce8"), Color("#f5f5f5"), Color("#e8b98f")]
-const SIGN_COLOURS := [Color("#b3201c"), Color("#1f4e8c"), Color("#f2b705"), Color("#1e7b3a"), Color("#6a1b9a"), Color("#e65100"), Color("#00695c")]
+const OFFERS := [
+    ["ஆடித் தள்ளுபடி", "AADI SALE 50% OFF"], ["தீபாவளி சலுகை", "DIWALI OFFERS"], ["பொங்கல் சிறப்பு", "PONGAL SPECIAL"],
+    ["புதிய வரவு", "NEW ARRIVALS"], ["சுத்த சைவ உணவு", "PURE VEG MEALS"], ["திருமண சேலைகள்", "WEDDING SAREES"],
+    ["எக்ஸ்சேஞ்ச் மேளா", "EXCHANGE MELA"], ["இன்றே வாருங்கள்!", "VISIT TODAY!"], ["மாபெரும் விற்பனை", "MEGA SALE"],
+]
+const FACADE_TINTS := [Color("#f7d9e3"), Color("#ffd08a"), Color("#b8e6c4"), Color("#a9d8f0"), Color("#ffb3b3"), Color("#fff2a8"), Color("#d6c2f0"),
+    Color("#f5f5f5"), Color("#ffc59a"), Color("#9fe0d8"), Color("#e6f59d"), Color("#f4a9cf"), Color("#c9e3ff"), Color("#ffe0b5")]
+const SIGN_COLOURS := [Color("#c62828"), Color("#1565c0"), Color("#f9a825"), Color("#2e7d32"), Color("#6a1b9a"), Color("#ef6c00"), Color("#00838f"),
+    Color("#ad1457"), Color("#283593"), Color("#fdd835"), Color("#00695c"), Color("#d84315")]
+const AWNING_COLOURS := [Color("#1e88e5"), Color("#e53935"), Color("#43a047"), Color("#fb8c00"), Color("#8e24aa"), Color("#00acc1"), Color("#fdd835")]
+const SHUTTER_COLOURS := [Color("#8fa3b8"), Color("#5b8fc7"), Color("#6fae7f"), Color("#c9a35b"), Color("#b0b0b0"), Color("#d07a6a")]
+const GOODS_COLOURS := [Color("#e53935"), Color("#fdd835"), Color("#43a047"), Color("#1e88e5"), Color("#ec407a"), Color("#ff7043"), Color("#ab47bc"), Color("#26c6da"), Color("#fafafa")]
 
 var data: Dictionary = {}
 var lanes: Array = []            # Array[PackedVector3Array]
@@ -34,6 +53,7 @@ func build(d: Dictionary) -> void:
     _kerbs()
     _markings()
     _buildings()
+    _bunting()
     _trees_and_poles()
     _boundary()
     _scenery()
@@ -182,10 +202,7 @@ func _buildings() -> void:
     var tank_mat := Mats.plain(Color("#202326"), 0.6)
     var shop_mat := Mats.shopfront()
     var shutter_mat := Mats.shutter()
-    var sign_count := 0
-    var signs_root := Node3D.new()
-    signs_root.name = "Signs"
-    add_child(signs_root)
+    var sign_jobs: Array = []
     for bd in data.get("buildings", []):
         var p: Array = bd.p
         var n := p.size() / 2
@@ -228,8 +245,10 @@ func _buildings() -> void:
             var c0 := Vector3(c2.x, 0, c2.y)
             var g := 3.4 if shop else 0.0
             if shop:
-                var m: Material = shop_mat if rng.randf() < 0.65 else shutter_mat
-                b.quad(a0, c0, c0 + Vector3(0, g, 0), a0 + Vector3(0, g, 0), nrm, m)
+                var open_shop := rng.randf() < 0.7
+                var m: Material = shop_mat if open_shop else shutter_mat
+                var sc: Color = Color.WHITE if open_shop else SHUTTER_COLOURS[rng.randi() % SHUTTER_COLOURS.size()]
+                b.quad(a0, c0, c0 + Vector3(0, g, 0), a0 + Vector3(0, g, 0), nrm, m, sc)
             b.quad(a0 + Vector3(0, g, 0), c0 + Vector3(0, g, 0), c0 + Vector3(0, h, 0), a0 + Vector3(0, h, 0), nrm, wall, tint)
             if shop:
                 # Concrete sunshade (chajja) over the shop fronts.
@@ -261,32 +280,14 @@ func _buildings() -> void:
                 b.cylinder(c3 + Vector3(rng.randf_range(-1, 1), 0, rng.randf_range(-1, 1)), 0.7, 1.4, tank_mat, 10)
                 if rng.randf() < 0.4:
                     b.box(c3 + Vector3(1.8, 1.2, 0.5), Vector3(2.4, 2.4, 2.6), roof_mat)
-        # Shop sign with an invented bilingual name.
-        if bd.has("s") and sign_count < 260:
+        # Shop fronts: split the road-facing wall into shop units, each with
+        # its own board, awning and goods on display.
+        if bd.has("s"):
             var sg: Array = bd.s
-            var sp := Vector3(float(sg[0]), 0, float(sg[1]))
-            var syaw := float(sg[2])
-            var sw := clampf(float(sg[3]), 2.5, 8.0)
-            var col: Color = SIGN_COLOURS[rng.randi() % SIGN_COLOURS.size()]
-            var basis := Basis(Vector3.UP, syaw)
-            b.box_basis(sp + Vector3(0, 4.15, 0) + basis.z * 0.05, Vector3(sw, 1.1, 0.12), basis, Mats.plain(col, 0.6))
-            var names: Array = SIGNS[rng.randi() % SIGNS.size()]
-            var lbl := Label3D.new()
-            lbl.text = "%s\n%s" % [names[1], names[0]]
-            lbl.font = sign_font
-            lbl.font_size = 64
-            lbl.pixel_size = clampf(sw / 14.0, 0.18, 0.5) * 0.01 * 1.6
-            lbl.outline_size = 0
-            lbl.modulate = Color("#ffffff") if col.get_luminance() < 0.6 else Color("#2a1a0a")
-            lbl.line_spacing = -18
-            lbl.position = sp + Vector3(0, 4.15, 0) + basis.z * 0.13
-            lbl.rotation.y = syaw
-            lbl.double_sided = false
-            lbl.visibility_range_end = 90.0
-            lbl.width = 900
-            lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
-            signs_root.add_child(lbl)
-            sign_count += 1
+            var units := clampi(int(round(float(sg[3]) / 6.0)), 1, 5)
+            var cand: Array = sign_jobs
+            cand.append({"sg": sg, "units": units, "floors": floors, "b": b, "d": Vector2(float(sg[0]), float(sg[1])).length()})
+    _shop_fronts(sign_jobs, rng)
     var body := StaticBody3D.new()
     body.name = "BuildingColliders"
     add_child(body)
@@ -300,6 +301,155 @@ func _buildings() -> void:
             var cs := CollisionShape3D.new()
             cs.shape = shape
             body.add_child(cs)
+
+func _shop_fronts(jobs: Array, rng: RandomNumberGenerator) -> void:
+    var signs_root := Node3D.new()
+    signs_root.name = "Signs"
+    add_child(signs_root)
+    jobs.sort_custom(func(x, y): return float(x.d) < float(y.d))
+    var label_budget: int = [450, 1000, 1700][clampi(AutoConfig.tier, 0, 2)]
+    var name_order: Array = range(SIGNS.size())
+    name_order.shuffle()
+    var name_i := 0
+    var board_edge := Mats.plain(Color("#f4f1e8"), 0.6)
+    var pole := Mats.plain(Color("#5d6166"), 0.5, 0.4)
+    for job in jobs:
+        var sg: Array = job.sg
+        var b: MeshBatcher = job.b
+        var units: int = job.units
+        var total := float(sg[3])
+        var uw := total / float(units)
+        var yaw := float(sg[2])
+        var basis := Basis(Vector3.UP, yaw)
+        var right := basis.x
+        var out := basis.z
+        var centre := Vector3(float(sg[0]), 0, float(sg[1]))
+        for u in units:
+            var off := -total * 0.5 + uw * (float(u) + 0.5)
+            var c := centre + right * off
+            var bw := maxf(uw - 0.35, 1.8)
+            var col: Color = SIGN_COLOURS[rng.randi() % SIGN_COLOURS.size()]
+            var entry: Array = SIGNS[name_order[name_i % name_order.size()]]
+            name_i += 1
+            # Signboard with a light frame
+            b.box_basis(c + Vector3(0, 4.15, 0) + out * 0.04, Vector3(bw + 0.16, 1.32, 0.08), basis, board_edge)
+            b.box_basis(c + Vector3(0, 4.15, 0) + out * 0.1, Vector3(bw, 1.16, 0.08), basis, Mats.plain(col, 0.55))
+            # Tarp awning sloping out over the footpath
+            var aw: Color = AWNING_COLOURS[rng.randi() % AWNING_COLOURS.size()]
+            var tilt := basis * Basis(Vector3.RIGHT, deg_to_rad(18.0))
+            b.box_basis(c + Vector3(0, 3.25, 0) + out * 0.55, Vector3(bw, 0.05, 1.1), tilt, Mats.plain(aw, 0.8))
+            b.box_basis(c + Vector3(0, 3.06, 0) + out * 1.08, Vector3(bw, 0.16, 0.04), basis, Mats.plain(aw.darkened(0.25), 0.8))
+            _display_goods(b, str(entry[2]), c, basis, bw, rng, pole)
+            if label_budget > 0:
+                label_budget -= 1
+                var lbl := Label3D.new()
+                lbl.text = "%s\n%s" % [entry[0], entry[1]]
+                lbl.font = sign_font
+                lbl.font_size = 64
+                var chars := maxi(str(entry[1]).length(), int(str(entry[0]).length() * 0.8))
+                lbl.pixel_size = minf((bw - 0.3) / (0.58 * 64.0 * float(chars)), 0.0072)
+                lbl.modulate = Color("#ffffff") if col.get_luminance() < 0.62 else Color("#3a1a05")
+                lbl.outline_size = 6
+                lbl.outline_modulate = col.darkened(0.45)
+                lbl.line_spacing = -22
+                lbl.position = c + Vector3(0, 4.15, 0) + out * 0.17
+                lbl.rotation.y = yaw
+                lbl.double_sided = false
+                lbl.visibility_range_end = 85.0
+                lbl.autowrap_mode = TextServer.AUTOWRAP_OFF
+                signs_root.add_child(lbl)
+        # Flex hoarding on the upper floors of some taller buildings.
+        if int(job.floors) >= 3 and rng.randf() < 0.35 and label_budget > 0:
+            var hw := minf(total * 0.8, 9.0)
+            var hc := centre + Vector3(0, 6.6, 0) + out * 0.12
+            var hcol: Color = SIGN_COLOURS[rng.randi() % SIGN_COLOURS.size()]
+            b.box_basis(hc, Vector3(hw, 2.3, 0.1), basis, Mats.plain(hcol, 0.6))
+            b.box_basis(hc + out * 0.02 + Vector3(0, -0.7, 0), Vector3(hw, 0.5, 0.1), basis, Mats.plain(Color("#fdd835") if hcol != Color("#fdd835") else Color("#c62828"), 0.6))
+            var offer: Array = OFFERS[rng.randi() % OFFERS.size()]
+            var lbl2 := Label3D.new()
+            lbl2.text = "%s\n%s" % [offer[0], offer[1]]
+            lbl2.font = sign_font
+            lbl2.font_size = 72
+            lbl2.pixel_size = minf((hw - 0.6) / (0.58 * 72.0 * float(str(offer[1]).length())), 0.012)
+            lbl2.outline_size = 10
+            lbl2.outline_modulate = Color(0, 0, 0, 0.6)
+            lbl2.line_spacing = -20
+            lbl2.position = hc + out * 0.09 + Vector3(0, 0.25, 0)
+            lbl2.rotation.y = yaw
+            lbl2.double_sided = false
+            lbl2.visibility_range_end = 140.0
+            signs_root.add_child(lbl2)
+            label_budget -= 1
+
+func _display_goods(b: MeshBatcher, kind: String, c: Vector3, basis: Basis, bw: float, rng: RandomNumberGenerator, pole: Material) -> void:
+    var out := basis.z
+    var right := basis.x
+    var base := c + out * 0.6 + Vector3(0, 0.14, 0)
+    match kind:
+        "cloth":
+            # Hanging sarees / clothes on a rail under the awning.
+            b.box_basis(c + out * 0.7 + Vector3(0, 2.8, 0), Vector3(bw * 0.9, 0.05, 0.05), basis, pole)
+            var n := int(bw / 0.6)
+            for i in n:
+                var x := -bw * 0.45 + (float(i) + 0.5) * (bw * 0.9 / float(n))
+                var col: Color = GOODS_COLOURS[rng.randi() % GOODS_COLOURS.size()]
+                b.box_basis(c + out * 0.7 + right * x + Vector3(0, 2.25, 0), Vector3(0.34, 1.1, 0.03), basis, Mats.plain(col, 0.9))
+        "crates":
+            var n2 := int(bw / 0.9)
+            for i in n2:
+                var x2 := -bw * 0.45 + (float(i) + 0.5) * (bw * 0.9 / float(n2))
+                var col2: Color = GOODS_COLOURS[rng.randi() % GOODS_COLOURS.size()]
+                b.box_basis(base + right * x2 + Vector3(0, 0.25, 0), Vector3(0.75, 0.5, 0.6), basis, Mats.plain(Color("#8d6e63"), 0.9))
+                b.box_basis(base + right * x2 + Vector3(0, 0.56, 0), Vector3(0.66, 0.14, 0.5), basis, Mats.plain(col2, 0.8))
+        "flowers":
+            # Jasmine and marigold garlands
+            var n3 := int(bw / 0.3)
+            for i in n3:
+                var x3 := -bw * 0.45 + (float(i) + 0.5) * (bw * 0.9 / float(n3))
+                var col3: Color = [Color("#fafafa"), Color("#ff9800"), Color("#fdd835"), Color("#e53935")][i % 4]
+                b.box_basis(c + out * 0.8 + right * x3 + Vector3(0, 2.4, 0), Vector3(0.08, 0.9, 0.08), basis, Mats.plain(col3, 0.9))
+            b.box_basis(base + Vector3(0, 0.4, 0), Vector3(bw * 0.8, 0.8, 0.7), basis, Mats.plain(Color("#795548"), 0.9))
+        "tea":
+            # Steel counter, glass jars and a bench
+            b.box_basis(base + Vector3(0, 0.5, 0), Vector3(minf(bw * 0.6, 2.4), 1.0, 0.6), basis, Mats.plain(Color("#b0bec5"), 0.3, 0.7))
+            for i in 3:
+                b.cylinder(base + right * (-0.5 + 0.5 * float(i)) + Vector3(0, 1.0, 0), 0.13, 0.3, Mats.plain(GOODS_COLOURS[rng.randi() % GOODS_COLOURS.size()], 0.2), 8)
+            b.box_basis(base + out * 0.9 + Vector3(0, 0.25, 0), Vector3(1.6, 0.08, 0.35), basis, Mats.plain(Color("#1565c0"), 0.7))
+        _:
+            pass
+
+func _bunting() -> void:
+    var flags: Array = data.get("flags", [])
+    if flags.is_empty():
+        return
+    var b := MeshBatcher.new()
+    var rope := Mats.plain(Color("#3e3e3e"))
+    var cols := [Color("#e53935"), Color("#fdd835"), Color("#43a047"), Color("#1e88e5"), Color("#ff9800"), Color("#ec407a"), Color("#ffffff")]
+    var mats: Array = []
+    for c in cols:
+        var m := Mats.plain(c, 0.9).duplicate() as StandardMaterial3D
+        m.cull_mode = BaseMaterial3D.CULL_DISABLED
+        mats.append(m)
+    for f in flags:
+        var a := Vector3(float(f[0]), 6.2, float(f[1]))
+        var e := Vector3(float(f[2]), 6.2, float(f[3]))
+        var span := a.distance_to(e)
+        if span < 3.0:
+            continue
+        var dir := (e - a) / span
+        var n := int(span / 0.55)
+        var prev := a
+        for i in range(1, n + 1):
+            var t := float(i) / float(n)
+            var p := a.lerp(e, t) + Vector3(0, -sin(t * PI) * 0.9, 0)
+            var mid := (prev + p) * 0.5
+            b.box_basis(mid, Vector3(0.02, 0.02, prev.distance_to(p)), Basis.looking_at(p - prev), rope)
+            if i < n:
+                var m: Material = mats[i % mats.size()]
+                var side := dir.cross(Vector3.UP).normalized()
+                b.tri(p - dir * 0.2, p + dir * 0.2, p + Vector3(0, -0.45, 0), side, m)
+            prev = p
+    b.commit(self, "Bunting", false)
 
 func _gopuram(b: MeshBatcher, base: Vector3, poly: PackedVector2Array) -> void:
     var ext := Rect2(poly[0], Vector2.ZERO)

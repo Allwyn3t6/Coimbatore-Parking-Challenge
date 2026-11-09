@@ -330,6 +330,10 @@ def build(raw):
             kind = "civic"
         elif near_major or btype in ("commercial", "retail", "shop", "supermarket"):
             kind = "shop"
+        # Coimbatore streets: most road-facing ground floors are shops.
+        if kind in ("generic", "house", "apartment") and best.distance(drivable) < 7.0:
+            if rng.random() < (0.85 if kind == "generic" else 0.45):
+                kind = "shop"
         blds.append({"poly": best, "floors": floors, "kind": kind})
     blds.sort(key=lambda b: b["poly"].centroid.distance(Point(0, 0)))
     blds = blds[:4200]
@@ -340,7 +344,7 @@ def build(raw):
         if b["kind"] not in ("shop",):
             continue
         poly = b["poly"]
-        if poly.distance(drivable) > 9:
+        if poly.distance(drivable) > 12:
             continue
         a, road_pt = nearest_points(poly.exterior, drivable)
         coords = list(poly.exterior.coords)
@@ -357,7 +361,7 @@ def build(raw):
         nx, nz = (z1 - z0) / ln, -(x1 - x0) / ln
         if (road_pt.x - mx) * nx + (road_pt.y - mz) * nz < 0:
             nx, nz = -nx, -nz
-        b["sign"] = [r1(mx + nx * 0.25), r1(mz + nz * 0.25), round(math.atan2(nx, nz), 3), r1(min(ln - 0.8, 9.0))]
+        b["sign"] = [r1(mx + nx * 0.25), r1(mz + nz * 0.25), round(math.atan2(nx, nz), 3), r1(min(ln - 0.6, 32.0))]
 
     # Greens and water.
     green = unary_union(greens).intersection(clip).difference(drivable) if greens else Polygon()
@@ -420,6 +424,26 @@ def build(raw):
         for ln in lines_of(r["clip"].difference(junction_zone)):
             if ln.length > 8:
                 marks.append(flat(ln.simplify(0.3).coords))
+
+    # Festival bunting (thoranam flags) strung across shop streets.
+    sign_pts = [Point(b["sign"][0], b["sign"][1]) for b in blds if "sign" in b]
+    sign_tree = unary_union([p.buffer(14) for p in sign_pts]) if sign_pts else Polygon()
+    flags = []
+    for r in roads:
+        if r["w"] >= 12 or r["clip"].is_empty or r["hw"] == "service":
+            continue
+        for line in lines_of(r["clip"]):
+            d = rng.uniform(10, 30)
+            while d < line.length - 8 and len(flags) < 160:
+                p0 = line.interpolate(d)
+                p1 = line.interpolate(min(d + 1, line.length))
+                fx, fz = p1.x - p0.x, p1.y - p0.y
+                ln = math.hypot(fx, fz) or 1.0
+                lx, lz = left_of(fx / ln, fz / ln)
+                half_w = r["w"] / 2.0 + 1.8
+                if sign_tree.contains(p0) and not junction_zone.contains(p0):
+                    flags.append([r1(p0.x + lx * half_w), r1(p0.y + lz * half_w), r1(p0.x - lx * half_w), r1(p0.y - lz * half_w)])
+                d += rng.uniform(30, 48)
 
     # ------------------------------------------------------------------ graph
     graph = {}
@@ -912,6 +936,7 @@ def build(raw):
         "trees": flat(tree_pts),
         "lanes": lanes,
         "decor": decor,
+        "flags": flags,
         "levels": levels,
     }
     log("levels:", [lv["id"] for lv in levels])

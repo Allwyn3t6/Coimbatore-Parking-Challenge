@@ -212,6 +212,7 @@ static func shutter() -> StandardMaterial3D:
     var m := _tri(StandardMaterial3D.new(), _img_tex(img), 1.2)
     m.roughness = 0.5
     m.metallic = 0.4
+    m.vertex_color_use_as_albedo = true
     _cache["shutter"] = m
     return m
 
