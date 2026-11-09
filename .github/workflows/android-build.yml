@@ -10,6 +10,7 @@ on:
       - "**.tres"
       - "project.godot"
       - "export_presets.cfg"
+      - "data/city.json"
       - ".github/workflows/android-build.yml"
 
 jobs:
@@ -33,7 +34,7 @@ jobs:
       - name: Install Android build packages
         run: |
           yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "platforms;android-35" "build-tools;35.0.1" "ndk;28.1.13356709" "cmake;3.10.2.4988404"
+          sdkmanager "platform-tools" "build-tools;35.0.1"
 
       - name: Install Godot 4.4.1
         run: |
@@ -46,8 +47,7 @@ jobs:
         run: |
           wget -q https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_export_templates.tpz
           mkdir -p "$HOME/.local/share/godot/export_templates/4.4.1.stable"
-          unzip -q Godot_v4.4.1-stable_export_templates.tpz -d "$RUNNER_TEMP/godot-templates"
-          cp -a "$RUNNER_TEMP/godot-templates/templates/." "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
+          unzip -q -j Godot_v4.4.1-stable_export_templates.tpz 'templates/android_*' 'templates/version.txt' -d "$HOME/.local/share/godot/export_templates/4.4.1.stable/"
 
       - name: Configure Android paths
         run: |
@@ -77,15 +77,14 @@ jobs:
       - name: Import project and validate scripts
         run: godot --headless --editor --path . --quit
 
-      - name: Export Android APK
+      - name: Export Android APK (debug-signed, for testing)
         run: |
           mkdir -p build
           export GODOT_ANDROID_KEYSTORE_DEBUG_PATH="$HOME/.android/debug.keystore"
           export GODOT_ANDROID_KEYSTORE_DEBUG_USER="androiddebugkey"
           export GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD="android"
-          godot --headless --verbose --path . --install-android-build-template --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
+          godot --headless --path . --export-debug "Android" build/CoimbatoreParkingChallenge-debug.apk
           test -s build/CoimbatoreParkingChallenge-debug.apk
-          "$ANDROID_HOME/build-tools/35.0.1/apksigner" sign --ks "$HOME/.android/debug.keystore" --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android build/CoimbatoreParkingChallenge-debug.apk
           "$ANDROID_HOME/build-tools/35.0.1/apksigner" verify --verbose build/CoimbatoreParkingChallenge-debug.apk
 
       - name: Upload debug APK

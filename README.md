@@ -1,43 +1,39 @@
 # Coimbatore Parking Challenge
 
-A mobile-first 3D parking game set in fictionalised Coimbatore streets. Built with Godot 4 and GDScript.
+A mobile 3D parking-and-racing game on the **real street layout of central Coimbatore** (the Gandhipuram bus-stand district), built with Godot 4.4.
 
-## Gameplay in this build
-- Three selectable street missions inspired by Gandhipuram, RS Puram and Race Course.
-- Third-person follow camera, steering, acceleration, reverse/braking and rolling wheels.
-- Ten selectable vehicle profiles based on a published Indian passenger-car sales snapshot.
-- Touch controls for Android and WASD/arrow-key controls for desktop.
-- Collision penalties, elapsed-time scoring, parking alignment checks, restart and pause.
-- Procedurally generated buildings, shopfront blocks, kerbs, parked vehicles and parking markings.
+Streets, buildings, car parks and bus-stand yards come from **OpenStreetMap**. Every name and identifying tag is removed. Shop signs carry invented bilingual (Tamil + English) names, so the town feels local without identifying any real business.
 
-## Vehicle roster
-The initial ten are ranked using V3Cars' rolling 12-month India model-sales list (Oct 2025–Sep 2026): Dzire, Nexon, Punch, Ertiga, Wagon R, Swift, Baleno, Fronx, Creta and Scorpio-N. Rankings are a dated snapshot and will change.
+## What's in the game
+- **Auto-generated levels from real data:** real car parks with bays and parked cars, kerbside parallel parking on real streets, a cross-town **Live Rush Hour** drive, and the **Kovai Grand Prix**, a 2-lap race against three rival cars on a loop of real main roads.
+- **Live traffic model:** traffic density follows the time on your phone, based on a typical Coimbatore weekday (peaks around 9:30 and 19:00, calmer on Sundays). The lighting also follows the clock, from morning sun to golden hour.
+- **Neat floating joystick:** touch anywhere in the zone and the stick appears under your thumb. Push up to drive, pull down to brake and reverse. There is an optional *stick + pedals* layout (GAS, BRAKE, D/R) and the stick can go on the left or right.
+- **Realistic driving:** the car pivots around its rear axle like a real car. Front wheels steer, brake and reverse lights work, and front/rear **parking sensors** beep faster as you get closer. There are chase, high and top-down cameras.
+- **Local flavour:** auto-rickshaws, town buses, lorries and two-wheelers in traffic; black-and-yellow kerbs; rain trees and coconut palms; rooftop water tanks; temple towers; and the Western Ghats on the horizon.
+- **Auto-configuration:** the game detects the phone (CPU cores, RAM, GPU family) and picks Low, Medium or High graphics. It then adapts render resolution to the measured frame rate, scales touch controls for phones vs tablets and rotates with the device (sensor landscape). Everything can be overridden in Settings.
 
-All in-game vehicles use original, simplified generic meshes with different dimensions, colours and handling profiles. No manufacturer logos, official CAD/3D models, or branded liveries are included. Vehicle/model names are trademarks of their respective owners. This unofficial game is not affiliated with any manufacturer.
+## Data pipeline (GitHub as storage)
+`tools/osm/build_city.py` runs in GitHub Actions (`.github/workflows/osm-data.yml`) whenever the pipeline changes, plus weekly. It:
+1. downloads OSM geometry for a 1.3 km × 1.3 km box through the Overpass API;
+2. strips all names and tags and keeps only geometry;
+3. builds the drivable surface, footpaths, kerbs, lane markings, buildings (with heights), trees, traffic lanes, levels and a race loop;
+4. commits `data/city.json` (plus the raw response in `data/raw/`).
 
-## Run locally
-1. Install Godot 4.4.1 (or a compatible Godot 4 release).
-2. Clone this repository and import `project.godot`.
-3. Run the project (F6/F5).
-4. Desktop: WASD or arrow keys; R restarts; Escape pauses.
-5. Touchscreen: use the on-screen steering and pedal controls.
+The APK ships with a copy of `data/city.json`. At start-up the game checks the GitHub copy and caches a newer version, so **map and level updates reach players without a new APK**.
 
-## Android export
-The repository includes `export_presets.cfg` with an Android ARM64 debug preset. Follow [ANDROID_BUILD.md](ANDROID_BUILD.md) for the complete setup.
+To change the area, edit `CENTER_LAT`, `CENTER_LON` and `HALF` in `tools/osm/build_city.py` and push. The data rebuilds automatically.
 
-Quick export after installing Godot 4.4.1, matching export templates, Android SDK and OpenJDK 17:
+## Ads (planned)
+`scripts/ads.gd` is a no-op placeholder. The game's rule is that only small banners may appear, and only on menu and results screens, never while driving. To monetise, add a Godot 4 AdMob Android plugin, enable it in the export preset and implement the three functions in `ads.gd`.
 
-```sh
-./tools/export_android.sh
-```
+## Build
+- Godot **4.4.1** with Android export templates, Android SDK build-tools 35 and Java 17+ (no Gradle or NDK needed).
+- `./tools/export_android.sh` builds a debug-signed APK. Set `GODOT_ANDROID_KEYSTORE_RELEASE_PATH/_USER/_PASSWORD` to build a signed release.
+- CI: `.github/workflows/android-build.yml` builds a debug APK artifact on every push.
+- Desktop test controls: WASD or arrows, Space to brake, C for camera, H for horn, Esc to pause, R to restart.
 
-The APK is written to `build/CoimbatoreParkingChallenge-debug.apk`. The preset uses package ID `com.allwyn3t6.coimbatoreparkingchallenge`. A Play Store release needs a separately configured release keystore and an AAB build. Never commit signing keys or passwords to this repository.
-
-## Street-data and asset policy
-This build uses fictionalised procedural streets, not surveyed road geometry. It is inspired by Coimbatore's urban character; it does not claim to reproduce exact road layouts. If OpenStreetMap-derived geometry is added later, credit OpenStreetMap contributors and comply with ODbL: https://www.openstreetmap.org/copyright.
-
-## Source references
-- V3Cars, Most Selling Cars in India – Last 12 Months Oct 2025–Sep 2026: https://www.v3cars.com/popular-cars (accessed 7 Nov 2026).
-
-## License
-Source code: MIT. This license does not grant rights to third-party trademarks or vehicle designs.
+## Credits and licences
+- Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), available under the ODbL 1.0. The game shows this attribution on the main menu.
+- Fonts: Baloo Thambi 2 and Rajdhani (SIL Open Font License), via Fontsource.
+- Vehicles are original generic models with no manufacturer names, logos or designs.
+- Source code: MIT.

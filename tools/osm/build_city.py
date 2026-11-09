@@ -672,7 +672,7 @@ def build(raw):
     tamil_lot = ["வாகன நிறுத்தம்", "பெரிய வாகன நிறுத்தம்"]
     tamil_par = ["தெரு ஓர நிறுத்தம்", "குறுகிய தெரு", "சந்து நிறுத்தம்"]
     for i, lv in enumerate(lot_levels):
-        lv.update({"id": f"lot{i + 1}", "type": "park", "name": ["Market Car Park", "Bus Stand Car Park"][i % 2], "tamil": tamil_lot[i % 2],
+        lv.update({"id": f"lot{i + 1}", "type": "park", "name": ["Market Car Park", "Side-Street Car Park"][i % 2], "tamil": tamil_lot[i % 2],
                    "difficulty": 1 + i, "par": 50.0 + 15 * i,
                    "brief": "A real car park from the map. Find the free bay (yellow) and park inside it - nose in or reverse in.",
                    "traffic": 0.45})
@@ -781,10 +781,10 @@ def build(raw):
         if len(pts) < 4:
             continue
         ls = LineString(pts + [pts[0]])
-        if not (1300 < ls.length < 3400):
+        if not (1000 < ls.length < 2600):
             continue
         overlap, maj = loop_cost(loop)
-        score = overlap * 3.0 - maj + abs(ls.length - 2200) / 3000.0
+        score = overlap * 3.0 - maj + abs(ls.length - 1500) / 1500.0
         if best_race is None or score < best_race[0]:
             best_race = (score, ls, overlap, maj)
     if best_race:
@@ -804,7 +804,7 @@ def build(raw):
         p0, p1 = race.interpolate(0), race.interpolate(3)
         levels.append({
             "id": "race", "type": "race", "name": "Kovai Grand Prix", "tamil": "கோவை கிராண்ட் ப்ரிக்ஸ்",
-            "difficulty": 4, "laps": 2, "rivals": 3, "par": race.length * 2 / 9.0,
+            "difficulty": 4, "laps": 2, "rivals": 3, "par": race.length * 2 / 13.0,
             "brief": f"Two laps of a {race.length / 1000:.1f} km loop on real main roads. Beat three rival cars and pass every gate in order.",
             "spawn": [r1(p0.x), r1(p0.y)], "yaw": round(yaw_of((p1.x - p0.x) / 3, (p1.y - p0.y) / 3), 3),
             "path": flat(pts), "checkpoints": cps, "length": r1(race.length), "traffic": 0.35,

@@ -5,3 +5,5 @@ android/
 *.aab
 *.keystore
 *.jks
+build/
+*.idsig
