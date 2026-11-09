@@ -77,7 +77,7 @@ def fetch():
   way["natural"~"^(water|wood|scrub|grassland)$"]({b});
   node["natural"="tree"]({b});
 );
-out geom tags;"""
+out body geom;"""
     body = urllib.parse.urlencode({"data": q}).encode()
     last = None
     for attempt in range(3):
@@ -227,7 +227,8 @@ def build(raw):
                 w = 3.6
             if tags.get("access") in ("private", "no") and hw != "service":
                 continue
-            nodes = el.get("nodes") or []
+            # Node keys from exact coordinates (shared OSM nodes have identical coordinates).
+            nodes = [(round(g["lat"], 7), round(g["lon"], 7)) for g in geo if g]
             for i, nid in enumerate(nodes):
                 node_use[nid] = node_use.get(nid, 0) + 1
                 if i < len(pts):
@@ -363,9 +364,12 @@ def build(raw):
     water = unary_union(waters).intersection(clip).difference(drivable) if waters else Polygon()
 
     # Trees: mapped trees, park scatter and street trees on minor roads.
+    from shapely.prepared import prep
+    no_tree = prep(unary_union([drivable.buffer(0.8), bld_union.buffer(1.0), water]))
+
     def tree_ok(x, z):
         p = Point(x, z)
-        return clip.contains(p) and not drivable.buffer(0.8).contains(p) and not bld_union.buffer(1.0).contains(p) and not water.contains(p)
+        return clip.contains(p) and not no_tree.contains(p)
 
     tree_pts = [(x, z) for x, z in trees if tree_ok(x, z)]
     for g in polys_of(green):
@@ -436,9 +440,25 @@ def build(raw):
             add_edge(a, b, d, r["major"])
             add_edge(b, a, d, r["major"])
 
+    seen, main_nodes = set(), set()
+    for start in graph:
+        if start in seen:
+            continue
+        comp, stack = set([start]), [start]
+        while stack:
+            u = stack.pop()
+            for v, _, _ in graph.get(u, []):
+                if v not in comp:
+                    comp.add(v)
+                    stack.append(v)
+        seen |= comp
+        if len(comp) > len(main_nodes):
+            main_nodes = comp
+    log(f"graph nodes {len(graph)}, main component {len(main_nodes)}")
+
     def nearest_node(x, z, major_only=False):
         best, bd = None, 1e18
-        for n in graph:
+        for n in main_nodes:
             if major_only and not any(e[2] for e in graph[n]):
                 continue
             px, pz = node_xy[n]
@@ -497,9 +517,10 @@ def build(raw):
         a, b = nearest_node(sx, sz), nearest_node(bx, bz)
         if a is None or b is None:
             return []
-        p = dijkstra(a, b)
+        p = dijkstra(a, b) if a != b else [a]
         if not p:
-            return []
+            log("  no route", (sx, sz), (bx, bz))
+            return flat([(sx, sz), (bx, bz)])
         pts = [(sx, sz)] + route_pts(p) + [(bx, bz)]
         return flat(LineString(pts).simplify(1.0).coords)
 
@@ -697,35 +718,78 @@ def build(raw):
     for lv in levels:
         lv["route"] = route_for(lv["spawn"][0], lv["spawn"][1], lv["bay"]["c"][0], lv["bay"]["c"][1])
 
-    # Race loop on major roads.
-    major_nodes = [n for n in graph if any(e[2] for e in graph[n])]
+    # Race loop: prefer main roads, avoid driving back along the same street.
+    major_nodes = [n for n in main_nodes if any(e[2] for e in graph[n])]
     race = None
-    if len(major_nodes) > 10:
-        for radius in (420, 360, 300, 240, 180):
-            cands = [n for n in major_nodes if math.hypot(*node_xy[n]) < radius]
-            if len(cands) < 6:
-                continue
-            a = min(cands, key=lambda n: (node_xy[n][0] + node_xy[n][1]))
-            b = max(cands, key=lambda n: math.dist(node_xy[n], node_xy[a]))
-            c = max(cands, key=lambda n: min(math.dist(node_xy[n], node_xy[a]), math.dist(node_xy[n], node_xy[b])))
-            used = set()
-            loop = []
-            ok = True
-            for s, t in ((a, b), (b, c), (c, a)):
-                p = dijkstra(s, t, major_only=True, penalty=used)
-                if not p:
-                    ok = False
-                    break
-                for i in range(len(p) - 1):
-                    used.add((p[i], p[i + 1]))
-                loop.extend(p if not loop else p[1:])
-            if not ok:
-                continue
-            pts = route_pts(loop)
-            ls = LineString(pts + [pts[0]])
-            if 900 < ls.length < 3600:
-                race = ls
+
+    def loop_cost(path_nodes):
+        edges = list(zip(path_nodes, path_nodes[1:]))
+        und = [frozenset(e) for e in edges]
+        overlap = 1.0 - len(set(und)) / max(len(und), 1)
+        maj = sum(1 for u, v in edges if any(e[0] == v and e[2] for e in graph[u])) / max(len(edges), 1)
+        return overlap, maj
+
+    def dijkstra_race(src, dst, penalty):
+        dist = {src: 0.0}
+        prev = {}
+        pq = [(0.0, src)]
+        while pq:
+            d, u = heapq.heappop(pq)
+            if u == dst:
                 break
+            if d > dist.get(u, 1e18):
+                continue
+            for v, w, maj in graph.get(u, []):
+                cost = w * (1.0 if maj else 1.6)
+                if frozenset((u, v)) in penalty:
+                    cost *= 40.0
+                nd = d + cost
+                if nd < dist.get(v, 1e18):
+                    dist[v] = nd
+                    prev[v] = u
+                    heapq.heappush(pq, (nd, v))
+        if dst not in dist:
+            return None
+        out = [dst]
+        while out[-1] != src:
+            out.append(prev[out[-1]])
+        return out[::-1]
+
+    best_race = None
+    pool = [n for n in major_nodes if math.hypot(*node_xy[n]) < HALF * 0.75]
+    rng_r = random.Random(7)
+    for attempt in range(70):
+        if len(pool) < 6:
+            break
+        tri3 = rng_r.sample(pool, 3)
+        pa, pb, pc = (node_xy[n] for n in tri3)
+        if min(math.dist(pa, pb), math.dist(pb, pc), math.dist(pc, pa)) < 220:
+            continue
+        used = set()
+        loop = []
+        ok = True
+        for s_, t_ in ((tri3[0], tri3[1]), (tri3[1], tri3[2]), (tri3[2], tri3[0])):
+            pth = dijkstra_race(s_, t_, used)
+            if not pth:
+                ok = False
+                break
+            used |= {frozenset(e) for e in zip(pth, pth[1:])}
+            loop.extend(pth if not loop else pth[1:])
+        if not ok:
+            continue
+        pts = route_pts(loop)
+        if len(pts) < 4:
+            continue
+        ls = LineString(pts + [pts[0]])
+        if not (1300 < ls.length < 3400):
+            continue
+        overlap, maj = loop_cost(loop)
+        score = overlap * 3.0 - maj + abs(ls.length - 2200) / 3000.0
+        if best_race is None or score < best_race[0]:
+            best_race = (score, ls, overlap, maj)
+    if best_race:
+        race = best_race[1]
+        log(f"race overlap {best_race[2]:.2f} main-road share {best_race[3]:.2f}")
     if race is None and major_nodes:
         log("race: falling back to any loop")
     if race is not None:
@@ -790,6 +854,35 @@ def build(raw):
                 if inner.contains(rect(cx, cz, 1.8, 4.2, yaw)) and not junction_zone.contains(Point(cx, cz)) and not obstacles.intersects(rect(cx, cz, 1.8, 4.2, yaw)):
                     decor.append([r1(cx), r1(cz), round(yaw, 3), rng.choice(["car", "car", "car", "bike", "bike", "auto"])])
                 dd += rng.uniform(25, 60)
+
+    # Town buses parked in bus-station yards.
+    for ba in bus_areas:
+        ba = ba.intersection(clip)
+        for bp in polys_of(ba):
+            if bp.area < 600:
+                continue
+            mrr = bp.minimum_rotated_rectangle
+            c = list(mrr.exterior.coords)
+            e1 = (c[1][0] - c[0][0], c[1][1] - c[0][1])
+            e2 = (c[2][0] - c[1][0], c[2][1] - c[1][1])
+            u = e1 if math.hypot(*e1) >= math.hypot(*e2) else e2
+            ang = math.atan2(u[1], u[0])
+            cen = bp.centroid
+            local = affinity.rotate(bp, -ang, origin=cen, use_radians=True)
+            minx, minz, maxx, maxz = local.bounds
+            inside = local.buffer(-1.0)
+            count = 0
+            v = minz + 2
+            while v + 12 < maxz and count < 30:
+                x = minx + 2
+                while x + 3.4 < maxx and count < 30:
+                    if inside.contains(box(x, v, x + 3.2, v + 11.5)) and rng.random() < 0.6:
+                        wc = affinity.rotate(Point(x + 1.6, v + 5.75), ang, origin=cen, use_radians=True)
+                        vd = (-math.sin(ang), math.cos(ang))
+                        decor.append([r1(wc.x), r1(wc.y), round(yaw_of(vd[0], vd[1]), 3), "bus"])
+                        count += 1
+                    x += 4.2
+                v += 12 + 15
 
     road_out = []
     for r in roads:
